@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExamMark Pro | Pangasinan State University</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-logo">
+          <img src="https://upload.wikimedia.org/wikipedia/en/8/8a/Pangasinan_State_University_logo.png" 
+               alt="PSU Logo" 
+               onerror="this.style.display='none'; this.parentElement.innerHTML='🦁'; this.parentElement.style.fontSize='28px';">
+        </div>
+        <div class="brand-text">
+          <h1>ExamMark Pro</h1>
+          <p>Pangasinan State University</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-section="dashboard">
+          <span class="nav-icon">🏠</span> Dashboard
+        </button>
+        <button class="nav-btn" data-section="examinations">
+          <span class="nav-icon">📝</span> Examinations
+        </button>
+        <button class="nav-btn" data-section="results">
+          <span class="nav-icon">👥</span> Student Results
+        </button>
+        <button class="nav-btn" data-section="statistics">
+          <span class="nav-icon">📈</span> Statistics
+        </button>
+        <button class="nav-btn" data-section="compare">
+          <span class="nav-icon">🔄</span> Compare Exams
+        </button>
+        <button class="nav-btn" data-section="settings">
+          <span class="nav-icon">⚙️</span> Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="themeToggle" class="theme-btn" title="Toggle theme">
+          <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <h2 id="pageTitle">Dashboard</h2>
+        <div class="topbar-actions">
+          <span class="badge" id="activeExamBadge">No exam selected</span>
+        </div>
+      </header>
+
+      <!-- ===================== DASHBOARD ===================== -->
+      <section id="dashboard" class="section active">
+        <div class="stats-grid">
+          <div class="stat-card primary">
+            <div class="stat-icon">📝</div>
+            <div>
+              <p class="stat-label">Examinations</p>
+              <h3 id="dashExams">0</h3>
+            </div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-icon">👥</div>
+            <div>
+              <p class="stat-label">Total Results</p>
+              <h3 id="dashStudents">0</h3>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-icon">📊</div>
+            <div>
+              <p class="stat-label">Overall Average</p>
+              <h3 id="dashAverage">—</h3>
+            </div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-icon">✅</div>
+            <div>
+              <p class="stat-label">Overall Pass Rate</p>
+              <h3 id="dashPassRate">—</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Recent Examinations</h3>
+            <div id="recentExamsList" class="list-empty">No examinations yet</div>
+          </div>
+          <div class="card">
+            <h3>Quick Stats (Current Exam)</h3>
+            <div id="quickStats" class="quick-stats">
+              <p>Select an examination to see details</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== EXAMINATIONS ===================== -->
+      <section id="examinations" class="section">
+        <div class="card">
+          <h3>Create New Examination</h3>
+          <form id="examForm" class="form-grid">
+            <div class="form-group">
+              <label for="examName">Examination Name *</label>
+              <input type="text" id="examName" placeholder="e.g. Mathematics Midterm" required />
+            </div>
+            <div class="form-group">
+              <label for="examDate">Date *</label>
+              <input type="date" id="examDate" required />
+            </div>
+            <div class="form-group">
+              <label for="examSubject">Subject</label>
+              <input type="text" id="examSubject" placeholder="e.g. Mathematics" />
+            </div>
+            <div class="form-group">
+              <label for="examPassMark">Pass Mark</label>
+              <input type="number" id="examPassMark" min="0" max="100" value="75" />
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Create Examination</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>All Examinations</h3>
+            <span class="count" id="examCount">0 exams</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Subject</th>
+                  <th>Date</th>
+                  <th>Pass Mark</th>
+                  <th>Results</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="examTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== STUDENT RESULTS ===================== -->
+      <section id="results" class="section">
+        <div class="card">
+          <h3>Select Examination</h3>
+          <div class="form-group">
+            <select id="examSelector" class="full-width"></select>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 id="formTitle">Add Student Result</h3>
+          <form id="resultForm" class="form-grid">
+            <div class="form-group">
+              <label for="studentId">Student ID *</label>
+              <input type="text" id="studentId" placeholder="2026-001" required />
+            </div>
+            <div class="form-group">
+              <label for="studentName">Full Name *</label>
+              <input type="text" id="studentName" placeholder="Juan Dela Cruz" required />
+            </div>
+            <div class="form-group">
+              <label for="studentSection">Section *</label>
+              <input type="text" id="studentSection" placeholder="STEM-A" required />
+            </div>
+            <div class="form-group">
+              <label for="studentScore">Score (0–100) *</label>
+              <input type="number" id="studentScore" min="0" max="100" step="0.01" placeholder="85" required />
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn primary" id="submitResultBtn">Add Result</button>
+              <button type="button" class="btn secondary" id="cancelEditBtn" hidden>Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="filters">
+            <div class="form-group">
+              <label>Search</label>
+              <input type="text" id="searchInput" placeholder="Name or Student ID..." />
+            </div>
+            <div class="form-group">
+              <label>Section</label>
+              <select id="sectionFilter">
+                <option value="">All Sections</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Sort By</label>
+              <select id="sortBy">
+                <option value="rank">Rank (Highest)</option>
+                <option value="score-asc">Score (Lowest)</option>
+                <option value="name">Name A–Z</option>
+                <option value="id">Student ID</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <button class="btn success" id="exportCsvBtn">📥 Export CSV</button>
+            <button class="btn secondary" id="printBtn">🖨️ Print</button>
+            <button class="btn danger" id="clearExamResultsBtn">Clear This Exam</button>
+          </div>
+
+          <div class="table-wrap">
+            <table id="resultsTable">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Student ID</th>
+                  <th>Name</th>
+                  <th>Section</th>
+                  <th>Score</th>
+                  <th>Grade</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="resultsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== STATISTICS ===================== -->
+      <section id="statistics" class="section">
+        <div class="card">
+          <h3>Select Examination for Statistics</h3>
+          <select id="statsExamSelector" class="full-width"></select>
+        </div>
+
+        <div class="stats-grid" id="statsCards">
+          <div class="stat-card"><p class="stat-label">Students</p><h3 id="statCount">0</h3></div>
+          <div class="stat-card"><p class="stat-label">Average</p><h3 id="statAvg">—</h3></div>
+          <div class="stat-card"><p class="stat-label">Median</p><h3 id="statMedian">—</h3></div>
+          <div class="stat-card"><p class="stat-label">Std. Dev.</p><h3 id="statStd">—</h3></div>
+          <div class="stat-card success"><p class="stat-label">Highest</p><h3 id="statHigh">—</h3></div>
+          <div class="stat-card danger"><p class="stat-label">Lowest</p><h3 id="statLow">—</h3></div>
+          <div class="stat-card success"><p class="stat-label">Passed</p><h3 id="statPassed">0</h3></div>
+          <div class="stat-card danger"><p class="stat-label">Failed</p><h3 id="statFailed">0</h3></div>
+          <div class="stat-card info"><p class="stat-label">Pass Rate</p><h3 id="statPassRate">—</h3></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Score Distribution</h3>
+            <canvas id="distChart" height="220"></canvas>
+          </div>
+          <div class="card">
+            <h3>Grade Breakdown</h3>
+            <canvas id="gradeChart" height="220"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Section Performance</h3>
+          <div id="sectionPerformance" class="list-empty">No data</div>
+        </div>
+      </section>
+
+      <!-- ===================== COMPARE ===================== -->
+      <section id="compare" class="section">
+        <div class="card">
+          <h3>Compare Two Examinations</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Exam A</label>
+              <select id="compareA"></select>
+            </div>
+            <div class="form-group">
+              <label>Exam B</label>
+              <select id="compareB"></select>
+            </div>
+            <div class="form-actions">
+              <button class="btn primary" id="runCompareBtn">Compare</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="compareResults" class="hidden">
+          <div class="stats-grid" id="compareStats"></div>
+          <div class="card">
+            <h3>Common Students Performance</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Exam A</th>
+                    <th>Exam B</th>
+                    <th>Change</th>
+                  </tr>
+                </thead>
+                <tbody id="compareTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SETTINGS ===================== -->
+      <section id="settings" class="section">
+        <div class="card">
+          <h3>Grade Scale</h3>
+          <p class="hint">Customize the letter/descriptive grades used throughout the system.</p>
+          <div id="gradeScaleEditor"></div>
+          <button class="btn primary" id="saveGradesBtn">Save Grade Scale</button>
+        </div>
+
+        <div class="card">
+          <h3>Default Pass Mark</h3>
+          <div class="form-group">
+            <input type="number" id="defaultPassMark" min="0" max="100" value="75" />
+          </div>
+          <button class="btn primary" id="savePassMarkBtn">Save Default</button>
+        </div>
+
+        <div class="card danger-zone">
+          <h3>Danger Zone</h3>
+          <p>These actions cannot be undone.</p>
+          <button class="btn danger" id="resetAllBtn">Reset Entire System</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
